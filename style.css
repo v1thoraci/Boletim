@@ -37,6 +37,100 @@ body {
   font-weight: 600;
 }
 
+/* Tela de Acesso por PIN */
+.login-box {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  max-width: 450px;
+  margin: 0 auto 30px auto;
+  text-align: center;
+}
+
+.login-box h2 {
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.login-box p {
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.form-group input {
+  padding: 10px 15px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 60%;
+}
+
+.form-group button, .painel-acoes button {
+  background-color: #1e293b;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.form-group button:hover, .painel-acoes button:hover {
+  background-color: #334155;
+}
+
+.mensagem-status {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.mensagem-erro {
+  color: #dc2626;
+}
+
+.mensagem-sucesso {
+  color: #16a34a;
+}
+
+/* Painel de Ações do Aluno */
+.painel-acoes {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+#btn-salvar {
+  background-color: #16a34a;
+}
+
+#btn-salvar:hover {
+  background-color: #15803d;
+}
+
+/* Campos de Edição na Tabela */
+.input-edicao {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.input-invalido {
+  border-color: #dc2626 !important;
+  background-color: #fef2f2;
+}
+
 /* Grid de Cards de Resumo */
 .cards-grid {
   display: grid;

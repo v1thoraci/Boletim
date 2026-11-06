@@ -12,57 +12,78 @@
     <!-- Cabeçalho do Boletim -->
     <header class="header">
       <h1>Boletim Digital</h1>
-      <p class="subtitle">9º Ano | Estudante Exemplo</p>
+      <p class="subtitle">9º Ano - Turma 9B | Chamada: 36</p>
     </header>
 
-    <!-- Área Superior: Cards de Resumo -->
-    <section class="cards-grid">
-      <div class="card">
-        <h3>Média Geral</h3>
-        <p id="card-media-geral" class="card-value">—</p>
+    <!-- Tela de Acesso por PIN -->
+    <section id="area-login" class="login-box">
+      <h2>Acesso ao Boletim</h2>
+      <p>Informe o seu PIN para acessar as notas:</p>
+      <div class="form-group">
+        <input type="password" id="input-pin" placeholder="Digite o PIN" autocomplete="off" />
+        <button id="btn-entrar" type="button">Entrar</button>
       </div>
-
-      <div class="card">
-        <h3>Total de Faltas</h3>
-        <p id="card-total-faltas" class="card-value">—</p>
-      </div>
-
-      <div class="card">
-        <h3>Bom Desempenho</h3>
-        <p id="card-bom-desempenho" class="card-value">—</p>
-      </div>
-
-      <div class="card">
-        <h3>Precisam de Atenção</h3>
-        <p id="card-atencao" class="card-value">—</p>
-      </div>
-
-      <div class="card">
-        <h3>Frequência Geral</h3>
-        <p id="card-frequencia" class="card-value">92%</p>
-        <span class="card-status">Frequência adequada</span>
-      </div>
+      <p id="mensagem-login" class="mensagem-status"></p>
     </section>
 
-    <!-- Tabela Responsiva de Notas -->
-    <section class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Disciplina</th>
-            <th>1º Tri</th>
-            <th>2º Tri</th>
-            <th>3º Tri</th>
-            <th>Média</th>
-            <th>Faltas</th>
-            <th>Situação</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-boletim">
-          <!-- As 15 linhas serão preenchidas automaticamente pelo JavaScript -->
-        </tbody>
-      </table>
-    </section>
+    <!-- Conteúdo do Boletim (Escondido até o login) -->
+    <div id="conteudo-boletim" style="display: none;">
+      <!-- Área de Ações do Aluno -->
+      <div class="painel-acoes">
+        <button id="btn-alternar-edicao" type="button">Alterar dados</button>
+        <button id="btn-salvar" type="button" style="display: none;">Salvar alterações</button>
+        <p id="mensagem-boletim" class="mensagem-status"></p>
+      </div>
+
+      <!-- Área Superior: Cards de Resumo -->
+      <section class="cards-grid">
+        <div class="card">
+          <h3>Média Geral</h3>
+          <p id="card-media-geral" class="card-value">—</p>
+        </div>
+
+        <div class="card">
+          <h3>Total de Faltas</h3>
+          <p id="card-total-faltas" class="card-value">—</p>
+        </div>
+
+        <div class="card">
+          <h3>Bom Desempenho</h3>
+          <p id="card-bom-desempenho" class="card-value">—</p>
+        </div>
+
+        <div class="card">
+          <h3>Precisam de Atenção</h3>
+          <p id="card-atencao" class="card-value">—</p>
+        </div>
+
+        <div class="card">
+          <h3>Frequência Geral</h3>
+          <p id="card-frequencia" class="card-value">92%</p>
+          <span class="card-status">Frequência adequada</span>
+        </div>
+      </section>
+
+      <!-- Tabela Responsiva de Notas -->
+      <section class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Disciplina</th>
+              <th>1º Tri</th>
+              <th>2º Tri</th>
+              <th>3º Tri</th>
+              <th>Média</th>
+              <th>Faltas</th>
+              <th>Situação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-boletim">
+            <!-- As linhas serão preenchidas dinamicamente pelo JavaScript -->
+          </tbody>
+        </table>
+      </section>
+    </div>
   </div>
 
   <script src="script.js"></script>
