@@ -11,6 +11,11 @@ let pinSessao = "";
 // Modo de edicao desativado por padrao
 let modoEdicao = false;
 
+// Instâncias dos gráficos Chart.js
+let graficoMedias = null;
+let graficoEvolucao = null;
+let graficoFaltas = null;
+
 // Dados ficticios brutos locais do 9º Ano (usados como fallback quando a API nao possui dados salvos)
 const dadosBoletimLocais = [
   { disciplina: "Língua Portuguesa", tri1: 78, tri2: "8,2", tri3: 8.6, faltas: [2, 2, 1] },
@@ -84,6 +89,237 @@ function validarFaltaDigitada(valorTexto) {
     return { valido: true, valor: num };
   }
   return { valido: false, valor: null };
+}
+
+// Gráfico 1: Média por Disciplina (Barras Horizontais)
+function atualizarGraficoMedias() {
+  const ctx = document.getElementById("graficoMediasDisciplinas");
+  if (!ctx) return;
+
+  if (graficoMedias) {
+    graficoMedias.destroy();
+  }
+
+  const rotulos = [];
+  const valores = [];
+
+  dadosBoletimAtuais.forEach(item => {
+    rotulos.push(item.disciplina);
+    const n1 = normalizarNota(item.tri1);
+    const n2 = normalizarNota(item.tri2);
+    const n3 = normalizarNota(item.tri3);
+    const notasValidas = [n1, n2, n3].filter(n => n !== null);
+
+    if (notasValidas.length > 0) {
+      const soma = notasValidas.reduce((acc, n) => acc + n, 0);
+      valores.push(Number((soma / notasValidas.length).toFixed(1)));
+    } else {
+      valores.push(null);
+    }
+  });
+
+  graficoMedias = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: rotulos,
+      datasets: [{
+        label: "Média",
+        data: valores,
+        backgroundColor: "#38bdf8",
+        borderColor: "#0284c7",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          min: 0,
+          max: 10,
+          ticks: { color: "#1e293b" }
+        },
+        y: {
+          ticks: { color: "#1e293b" }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const val = context.raw;
+              return val !== null ? `Média: ${String(val).replace(".", ",")}` : "Sem notas disponíveis";
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Gráfico 2: Evolução da Média Geral (Linha)
+function atualizarGraficoEvolucao() {
+  const ctx = document.getElementById("graficoEvolucaoTrimestres");
+  if (!ctx) return;
+
+  if (graficoEvolucao) {
+    graficoEvolucao.destroy();
+  }
+
+  const notasTri1 = [];
+  const notasTri2 = [];
+  const notasTri3 = [];
+
+  dadosBoletimAtuais.forEach(item => {
+    const n1 = normalizarNota(item.tri1);
+    const n2 = normalizarNota(item.tri2);
+    const n3 = normalizarNota(item.tri3);
+
+    if (n1 !== null) notasTri1.push(n1);
+    if (n2 !== null) notasTri2.push(n2);
+    if (n3 !== null) notasTri3.push(n3);
+  });
+
+  const calcMediaArr = (arr) => {
+    if (arr.length === 0) return null;
+    const soma = arr.reduce((acc, n) => acc + n, 0);
+    return Number((soma / arr.length).toFixed(1));
+  };
+
+  const m1 = calcMediaArr(notasTri1);
+  const m2 = calcMediaArr(notasTri2);
+  const m3 = calcMediaArr(notasTri3);
+
+  graficoEvolucao = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["1º Tri", "2º Tri", "3º Tri"],
+      datasets: [{
+        label: "Média Geral",
+        data: [m1, m2, m3],
+        borderColor: "#1e293b",
+        backgroundColor: "rgba(56, 189, 248, 0.2)",
+        fill: true,
+        tension: 0.2,
+        pointRadius: 5,
+        pointBackgroundColor: "#38bdf8"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          min: 0,
+          max: 10,
+          ticks: { color: "#1e293b" }
+        },
+        x: {
+          ticks: { color: "#1e293b" }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (context) => {
+              const val = context.raw;
+              return val !== null ? `Média: ${String(val).replace(".", ",")}` : "Sem notas";
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// Gráfico 3: Faltas por Trimestre (Barras)
+function atualizarGraficoFaltas() {
+  const ctx = document.getElementById("graficoFaltasTrimestres");
+  const estadoFaltasContainer = document.getElementById("estadoFaltas");
+  const cardFaltas = document.getElementById("card-grafico-faltas");
+  if (!ctx) return;
+
+  if (graficoFaltas) {
+    graficoFaltas.destroy();
+  }
+
+  let faltasTri1 = 0;
+  let faltasTri2 = 0;
+  let faltasTri3 = 0;
+
+  dadosBoletimAtuais.forEach(item => {
+    let f1 = 0, f2 = 0, f3 = 0;
+    if (Array.isArray(item.faltas)) {
+      f1 = Number(item.faltas[0]) || 0;
+      f2 = Number(item.faltas[1]) || 0;
+      f3 = Number(item.faltas[2]) || 0;
+    } else if (item.faltas && typeof item.faltas === "object") {
+      f1 = Number(item.faltas.tri1) || 0;
+      f2 = Number(item.faltas.tri2) || 0;
+      f3 = Number(item.faltas.tri3) || 0;
+    }
+    faltasTri1 += f1;
+    faltasTri2 += f2;
+    faltasTri3 += f3;
+  });
+
+  const totalAcumuladoFaltas = faltasTri1 + faltasTri2 + faltasTri3;
+  const REFERENCIA_RISCO_INTERNA = 350;
+
+  if (estadoFaltasContainer && cardFaltas) {
+    if (totalAcumuladoFaltas >= REFERENCIA_RISCO_INTERNA) {
+      estadoFaltasContainer.innerHTML = '<span class="badge-perigo">Perigo</span>';
+      cardFaltas.classList.add("card-perigo");
+    } else {
+      estadoFaltasContainer.innerHTML = "";
+      cardFaltas.classList.remove("card-perigo");
+    }
+  }
+
+  graficoFaltas = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ["1º Tri", "2º Tri", "3º Tri"],
+      datasets: [{
+        label: "Faltas",
+        data: [faltasTri1, faltasTri2, faltasTri3],
+        backgroundColor: "#1e293b",
+        borderColor: "#0f172a",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { color: "#1e293b" }
+        },
+        x: {
+          ticks: { color: "#1e293b" }
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (context) => `${context.label}: ${context.raw} faltas`
+          }
+        }
+      }
+    }
+  });
+}
+
+// Atualiza a suíte completa de gráficos sem mutar o estado original
+function atualizarGraficos() {
+  atualizarGraficoMedias();
+  atualizarGraficoEvolucao();
+  atualizarGraficoFaltas();
 }
 
 // Renderizacao da tabela e atualizacao dos cards
@@ -226,6 +462,9 @@ function renderizarInterface() {
   
   // Frequência fictícia e demonstrativa mantida intacta
   document.getElementById("card-frequencia").textContent = "92%";
+
+  // Chamada pontual para atualizar os gráficos após a renderização da interface
+  atualizarGraficos();
 }
 
 // Abertura do boletim conectando à API
@@ -413,6 +652,14 @@ async function salvarAlteracoes() {
     msgBoletim.className = "mensagem-status mensagem-erro";
   }
 }
+
+// Configuração dos eventos da página
+document.getElementById("btn-entrar").addEventListener("click", abrirBoletim);
+document.getElementById("input-pin").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") abrirBoletim();
+});
+document.getElementById("btn-alternar-edicao").addEventListener("click", alternarEdicao);
+document.getElementById("btn-salvar").addEventListener("click", salvarAlteracoes);
 
 // Configuração dos eventos da página
 document.getElementById("btn-entrar").addEventListener("click", abrirBoletim);
