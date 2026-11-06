@@ -660,11 +660,3 @@ document.getElementById("input-pin").addEventListener("keypress", (e) => {
 });
 document.getElementById("btn-alternar-edicao").addEventListener("click", alternarEdicao);
 document.getElementById("btn-salvar").addEventListener("click", salvarAlteracoes);
-
-// Configuração dos eventos da página
-document.getElementById("btn-entrar").addEventListener("click", abrirBoletim);
-document.getElementById("input-pin").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") abrirBoletim();
-});
-document.getElementById("btn-alternar-edicao").addEventListener("click", alternarEdicao);
-document.getElementById("btn-salvar").addEventListener("click", salvarAlteracoes);
