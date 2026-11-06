@@ -377,3 +377,47 @@ async function salvarAlteracoes() {
   msgBoletim.className = "mensagem-status";
 
   try {
+    const resposta = await fetch(`${CONFIG_ALUNO.apiUrl}/api/v1/boletins/salvar`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        turma: CONFIG_ALUNO.turma,
+        numero_chamada: CONFIG_ALUNO.numeroChamada,
+        pin: pinSessao,
+        dados: {
+          disciplinas: novasDisciplinas
+        }
+      })
+    });
+
+    if (!resposta.ok) {
+      msgBoletim.textContent = "Não foi possível salvar as alterações. Tente novamente.";
+      msgBoletim.className = "mensagem-status mensagem-erro";
+      return;
+    }
+
+    // Atualiza os dados locais com sucesso
+    dadosBoletimAtuais = novasDisciplinas;
+    modoEdicao = false;
+
+    document.getElementById("btn-alternar-edicao").textContent = "Alterar dados";
+    document.getElementById("btn-salvar").style.display = "none";
+
+    renderizarInterface();
+
+    msgBoletim.textContent = "Dados salvos com sucesso.";
+    msgBoletim.className = "mensagem-status mensagem-sucesso";
+
+  } catch (erro) {
+    msgBoletim.textContent = "Não foi possível salvar as alterações. Tente novamente.";
+    msgBoletim.className = "mensagem-status mensagem-erro";
+  }
+}
+
+// Configuração dos eventos da página
+document.getElementById("btn-entrar").addEventListener("click", abrirBoletim);
+document.getElementById("input-pin").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") abrirBoletim();
+});
+document.getElementById("btn-alternar-edicao").addEventListener("click", alternarEdicao);
+document.getElementById("btn-salvar").addEventListener("click", salvarAlteracoes);
